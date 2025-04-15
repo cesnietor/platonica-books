@@ -7,10 +7,12 @@ Longer summaries, so that you can remember what the book was about. You may add 
 
 Project uses UV as the package manager.
 
-e.g. to install package
+To install package use `uv add` don't use pip cause it doesn't update toml file.
+
+e.g.
 
 ```
-uv pip install django-cors-headers
+uv add django-cors-headers
 ```
 
 Start UV environment:
