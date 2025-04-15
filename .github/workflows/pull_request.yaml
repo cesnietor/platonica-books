@@ -45,7 +45,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Install dependencies with uv
-        run: uv pip install -r pyproject.toml --system
+        run: uv pip install -r pyproject.toml --system --extra dev
 
       - name: Wait for Postgres using pg_isready
         run: |
