@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from .models import Book
 
-from typing import Optional, Dict
+from typing import Optional
 
 GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes/{volume_id}"
 
@@ -36,7 +36,7 @@ class Query:
 schema = strawberry.Schema(query=Query)
 
 
-## FIXME: refactor this, move to its own file
+# FIXME: refactor this, move to its own file
 @dataclass
 class BookInfo:
     id: str

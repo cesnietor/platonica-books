@@ -7,10 +7,12 @@ Longer summaries, so that you can remember what the book was about. You may add 
 
 Project uses UV as the package manager.
 
-e.g. to install package
+To install package use `uv add` don't use pip cause it doesn't update toml file.
+
+e.g.
 
 ```
-uv pip install django-cors-headers
+uv add django-cors-headers
 ```
 
 Start UV environment:
@@ -34,6 +36,12 @@ python manage.py runserver
 
 Admin site available on `http://127.0.0.1:8000/admin`
 GraphQL UI available on http://127.0.0.1:8000/app/graphql/
+
+Linter:
+
+```
+ruff check . --fix
+```
 
 ### Web App
 
