@@ -6,14 +6,20 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432:5432"
+      - "5480:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   # web:
   #   build: .
-  #   container_name: modernhealth_container
+  #   container_name: platonica_web
   #   command: bash -c "python manage.py makemigrations && python manage.py migrate && python3 manage.py loaddata spprograms/fixtures/seeddata.json && python manage.py runserver 0.0.0.0:8000"
   #   volumes:
-  #     - .:/modernhealth
+  #     - .:/platonica_web
   #   ports:
   #     - "8000:8000"
   #   depends_on:
   #     - db
+
+volumes:
+  pgdata:
