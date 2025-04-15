@@ -63,7 +63,6 @@ jobs:
       - name: Run tests
         run: python manage.py test
 
-      - name: Run lint
+      - name: Run ruff
         run: |
-          uv pip install flake8
-          flake8 .
+          ruff check --show-files .

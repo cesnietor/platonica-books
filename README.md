@@ -37,6 +37,12 @@ python manage.py runserver
 Admin site available on `http://127.0.0.1:8000/admin`
 GraphQL UI available on http://127.0.0.1:8000/app/graphql/
 
+Linter:
+
+```
+ruff check . --fix
+```
+
 ### Web App
 
 Uses React + typescript + tanstack Query
