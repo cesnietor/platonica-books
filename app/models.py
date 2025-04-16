@@ -1,9 +1,12 @@
 import uuid
+
 from django.db import models
 
 
 class Book(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    # FIXME: rename to title
     name = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
     google_books_id = models.CharField(
