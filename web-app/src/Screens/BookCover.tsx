@@ -4,7 +4,8 @@ import Box from "@mui/material/Box";
 
 interface BookCoverProps {
   imageUrl: string;
-  altText?: string;
+  onClick?: () => void;
+  bookName?: string;
   width?: number | string;
   height?: number | string;
 }
@@ -12,13 +13,20 @@ interface BookCoverProps {
 const StyledCover = styled(Box)<{
   width: string | number;
   height: string | number;
+  onClick?: () => void;
 }>(({ theme, width, height }) => ({
   width,
   height,
-  borderRadius: theme.shape.borderRadius * 1,
+  cursor: "pointer",
   overflow: "hidden",
   boxShadow: theme.shadows[3],
-  backgroundColor: theme.palette.grey[100],
+  backgroundColor: theme.palette.grey[300],
+  borderRadius: theme.shape.borderRadius * 1,
+  // If no image we show a white box but still needs on hover effect
+  transition: "background-color 0.3s",
+  "&:hover": {
+    backgroundColor: theme.palette.grey[200],
+  },
 }));
 
 const StyledImage = styled("img")({
@@ -26,17 +34,23 @@ const StyledImage = styled("img")({
   height: "100%",
   objectFit: "cover",
   display: "block",
+  // Hover effect for img
+  transition: "filter 0.2s ease",
+  "&:hover": {
+    filter: "brightness(0.9)", // make image brighter on hover
+  },
 });
 
 const BookCover: React.FC<BookCoverProps> = ({
   imageUrl,
-  altText = "Book cover",
+  onClick,
+  bookName = "Book cover",
   width = 120,
   height = 180,
 }) => {
   return (
-    <StyledCover width={width} height={height}>
-      <StyledImage src={imageUrl} alt={altText} />
+    <StyledCover width={width} height={height} onClick={onClick}>
+      <StyledImage src={imageUrl} alt={bookName} />
     </StyledCover>
   );
 };

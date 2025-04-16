@@ -116,8 +116,7 @@ CSRF_COOKIE_SAMESITE = "Lax"  # Good default for local dev
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
-            "django.contrib.auth.password_validation."
-            "UserAttributeSimilarityValidator"
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
         ),
     },
     {
