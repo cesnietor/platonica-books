@@ -15,28 +15,30 @@ class Query:
 
     @strawberry.field
     def review(self, uuid: UUID) -> Optional[ReviewInfoType]:
-        review_data = get_review_info(uuid)
-        if review_data is not None:
+        info = get_review_info(uuid)
+        if info is not None:
             return ReviewInfoType(
-                uuid=review_data.uuid,
-                text=review_data.text,
-                book=review_data.book,
+                uuid=info.uuid,
+                text=info.text,
+                book=info.book,
             )
 
     @strawberry.field
     def book(self, uuid: UUID) -> Optional[BookInfoType]:
         # Fetch data from your data source
-        book_data = get_book_info(uuid)
-        if book_data is not None:
+        info = get_book_info(uuid)
+        if info is not None:
             return BookInfoType(
-                uuid=book_data.uuid,
-                title=book_data.title,
-                authors=book_data.authors,
-                pub_date=book_data.pub_date,
-                page_count=book_data.page_count,
-                thumbnail_url=book_data.thumbnail_url,
-                small_thumbnail_url=book_data.small_thumbnail_url,
-                google_books_id=book_data.google_books_id,
+                uuid=info.uuid,
+                title=info.title,
+                authors=info.authors,
+                pub_date=info.pub_date,
+                page_count=info.page_count,
+                thumbnail_url=info.thumbnail_url,
+                small_thumbnail_url=info.small_thumbnail_url,
+                image_small_url=info.image_small_url,
+                image_medium_url=info.image_medium_url,
+                google_books_id=info.google_books_id,
             )
         return None
 

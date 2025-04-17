@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
 interface BookCoverProps {
   imageUrl: string;
+  fallbackImageUrl?: string;
   onClick?: () => void;
   bookName?: string;
   width?: number | string;
@@ -43,14 +44,16 @@ const StyledImage = styled("img")({
 
 const BookCover: React.FC<BookCoverProps> = ({
   imageUrl,
+  fallbackImageUrl,
   onClick,
   bookName = "Book cover",
   width = 120,
   height = 180,
 }) => {
+  const srcUrl = imageUrl?.trim() ? imageUrl : fallbackImageUrl;
   return (
     <StyledCover width={width} height={height} onClick={onClick}>
-      <StyledImage src={imageUrl} alt={bookName} />
+      <StyledImage src={srcUrl} alt={bookName} />
     </StyledCover>
   );
 };

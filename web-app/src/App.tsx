@@ -1,8 +1,43 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import BookReviews from "./Screens/Reviews";
-import { Navigate, Route, Routes } from "react-router-dom";
+import Reviews from "./Screens/Reviews";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import NotFound from "./Screens/NotFound";
 import BookDetails from "./Screens/BookDetails";
+
+// TODO: split into different routers per children to have them cleaner e.g. Books, App, Reviews, etc.
+const router = createBrowserRouter([
+  {
+    path: "/",
+    children: [
+      {
+        // Redirect by default to /reviews
+        index: true,
+        element: <Navigate to="/reviews" replace />,
+      },
+      {
+        path: "reviews",
+        element: <Reviews />,
+      },
+      {
+        path: "books",
+        children: [
+          {
+            path: ":uuid",
+            element: <BookDetails />,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
+]);
 
 const queryClient = new QueryClient();
 
@@ -10,12 +45,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <h1>Platonica</h1>
-      <Routes>
-        <Route path={"/"} element={<Navigate to="/reviews" replace />} />
-        <Route path={"/reviews"} element={<BookReviews />} />
-        <Route path={"*"} element={<NotFound />} />
-        <Route path="/books/:uuid" element={<BookDetails />} />
-      </Routes>
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }

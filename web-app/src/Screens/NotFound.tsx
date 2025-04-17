@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function NotFound() {
   return (
@@ -21,12 +21,7 @@ function NotFound() {
       <Typography variant="body1" sx={{ mb: 3 }}>
         Sorry, the page you're looking for doesn't exist.
       </Typography>
-      <Button
-        variant="outlined"
-        color="secondary"
-        component={RouterLink}
-        to="/"
-      >
+      <Button variant="outlined" color="secondary" component={Link} to="/">
         Go to Homepage
       </Button>
     </Box>
