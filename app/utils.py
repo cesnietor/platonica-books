@@ -8,6 +8,7 @@ from app.models import Book, Review
 
 from .dtos import BookInfo, ReviewInfo
 
+# Google recommends only fetching desired fields e.g. `?fields=id,volumeInfo(title,authors,imageLinks/thumbnail)`
 GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes/{volume_id}"
 
 
@@ -99,5 +100,7 @@ def fetch_book_data(uuid: UUID, volume_id: str) -> Optional[BookInfo]:
         pub_date=volume_info.get("publishedDate"),
         page_count=volume_info.get("pageCount"),
         thumbnail_url=image_links.get("thumbnail"),
-        small_thumbnail_url=image_links.get("smallThumbnail"),
+        small_thumbnail_url=image_links.get("smallThumbnailUrl"),
+        image_small_url=image_links.get("small"),
+        image_medium_url=image_links.get("medium"),
     )

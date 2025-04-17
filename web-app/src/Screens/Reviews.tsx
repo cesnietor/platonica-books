@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
 import { graphQLClient } from "../graphqlClient";
 import BookCover from "./BookCover";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -13,12 +13,13 @@ const GetBookReviewsQuery = gql`
         uuid
         title
         thumbnailUrl
+        smallThumbnailUrl
       }
     }
   }
 `;
 
-function BookReviews() {
+function Reviews() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["reviews"],
     queryFn: () => graphQLClient.request(GetBookReviewsQuery),
@@ -30,7 +31,7 @@ function BookReviews() {
 
   useEffect(() => {
     if (bookUUID) {
-      navigate(`/books/${bookUUID}`, { replace: true });
+      navigate(`/books/${bookUUID}`);
     }
   }, [navigate, bookUUID]);
 
@@ -38,43 +39,55 @@ function BookReviews() {
   if (isError) return <div>Error!</div>;
 
   return (
-    <>
-      <Box
-        id="reviews-list"
-        sx={{
-          margin: "20px",
-        }}
-      >
-        <Typography variant="h5" component="h2" gutterBottom>
-          Reviews
-        </Typography>
-        <Grid
-          container
-          spacing={2}
-          direction="row"
+    <Box p={4} display="flex" justifyContent="center">
+      <Card sx={{ display: "flex", width: "100%", maxWidth: 1200 }}>
+        <CardContent
           sx={{
-            justifyContent: "flex-start",
-            alignItems: "center",
+            display: "flex",
+            width: "100%",
+            gap: 4,
+            flexDirection: { xs: "column", md: "row" },
           }}
         >
-          {data.reviews.map((r) => {
-            const { title, thumbnailUrl, uuid } = r.book;
-            return (
-              <Grid>
-                <BookCover
-                  bookName={title}
-                  imageUrl={thumbnailUrl}
-                  onClick={() => {
-                    setBookUUID(uuid);
-                  }}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Box>
-    </>
+          <Box
+            id="reviews-list"
+            sx={{
+              margin: "10px",
+            }}
+          >
+            <Typography variant="h5" component="h2" gutterBottom>
+              Reviews
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              direction="row"
+              sx={{
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              {data.reviews.map((r) => {
+                const { title, thumbnailUrl, smallThumbnailUrl, uuid } = r.book;
+                return (
+                  <Grid key={`book-grid-item-${uuid}`}>
+                    <BookCover
+                      bookName={title}
+                      imageUrl={thumbnailUrl}
+                      fallbackImageUrl={smallThumbnailUrl}
+                      onClick={() => {
+                        setBookUUID(uuid);
+                      }}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
 
-export default BookReviews;
+export default Reviews;
