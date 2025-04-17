@@ -8,7 +8,8 @@ from app.models import Book, Review
 
 from .dtos import BookInfo, ReviewInfo
 
-# Google recommends only fetching desired fields e.g. `?fields=id,volumeInfo(title,authors,imageLinks/thumbnail)`
+# Google recommends only fetching desired
+# fields e.g. `?fields=id,volumeInfo(title,authors,imageLinks/thumbnail)`
 GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes/{volume_id}"
 
 
