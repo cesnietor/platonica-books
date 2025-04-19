@@ -19,6 +19,7 @@ class Query:
         if info is not None:
             return ReviewInfoType(
                 uuid=info.uuid,
+                title=info.title,
                 text=info.text,
                 book=info.book,
             )
@@ -32,7 +33,7 @@ class Query:
                 uuid=info.uuid,
                 title=info.title,
                 authors=info.authors,
-                pub_date=info.pub_date,
+                date_published=info.date_published,
                 page_count=info.page_count,
                 thumbnail_url=info.thumbnail_url,
                 small_thumbnail_url=info.small_thumbnail_url,

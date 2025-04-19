@@ -7,7 +7,9 @@ class BookInfo:
     uuid: str
     title: str
     authors: Optional[List[str]] = None
-    pub_date: Optional[str] = None
+    date_published: Optional[str] = None
+    date_started: Optional[str] = None
+    date_finished: Optional[str] = None
     page_count: Optional[int] = None
     thumbnail_url: Optional[str] = None
     small_thumbnail_url: Optional[str] = None
@@ -19,5 +21,6 @@ class BookInfo:
 @dataclass
 class ReviewInfo:
     uuid: str
+    title: str
     text: str
     book: Optional[BookInfo]

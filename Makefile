@@ -14,6 +14,10 @@ migrations:
 	@echo "Creating migrations..."
 	@(python manage.py makemigrations $(APP))
 
+empty-migrations:
+	@echo "Creating empty migration..."
+	@(python manage.py makemigrations --empty $(APP))
+	
 migrate:
 	@echo "Running migrations..."
 	@(python manage.py migrate $(APP))
