@@ -26,7 +26,12 @@ def get_reviews() -> Optional[List[ReviewInfo]]:
 
 def get_data_for_review(review: Optional[Review]) -> Optional[ReviewInfo]:
     book = get_data_for_book(review.book)
-    return ReviewInfo(uuid=review.uuid, text=review.text, book=book)
+    return ReviewInfo(
+        uuid=review.uuid,
+        title=review.title,
+        text=review.text,
+        book=book,
+    )
 
 
 def get_data_for_book(book: Optional[Book]) -> Optional[BookInfo]:
@@ -35,9 +40,11 @@ def get_data_for_book(book: Optional[Book]) -> Optional[BookInfo]:
 
     default_info = BookInfo(
         uuid=book.uuid,
-        title=book.name,
+        title=book.title,
+        authors=book.authors,
     )
 
+    # Fetch from 3rd party book library if defined
     if book.google_books_id is not None:
         data = fetch_book_data(
             uuid=book.uuid,
@@ -98,7 +105,7 @@ def fetch_book_data(uuid: UUID, volume_id: str) -> Optional[BookInfo]:
         google_books_id=volume_id,
         title=volume_info.get("title", "Untitled"),
         authors=volume_info.get("authors"),
-        pub_date=volume_info.get("publishedDate"),
+        date_published=volume_info.get("publishedDate"),
         page_count=volume_info.get("pageCount"),
         thumbnail_url=image_links.get("thumbnail"),
         small_thumbnail_url=image_links.get("smallThumbnailUrl"),
