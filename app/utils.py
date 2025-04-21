@@ -5,12 +5,14 @@ from uuid import UUID
 import requests
 
 from app.models import Book, Review
+from project import settings
 
 from .dtos import BookInfo, ReviewInfo
 
-# Google recommends only fetching desired
+# TODO: Google recommends only fetching desired
 # fields e.g. `?fields=id,volumeInfo(title,authors,imageLinks/thumbnail)`
-GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes/{volume_id}"
+GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1"
+REQUEST_TIMEOUT_SECS = 5
 
 
 def get_reviews() -> Optional[List[ReviewInfo]]:
@@ -90,7 +92,17 @@ def get_book_from_db(uuid: UUID) -> Optional[Book]:
 def fetch_book_data(uuid: UUID, volume_id: str) -> Optional[BookInfo]:
     """Fetches book metadata from Google Books API and returns selected fields."""
     try:
-        response = requests.get(GOOGLE_BOOKS_API_URL.format(volume_id=volume_id))
+        params = {
+            "key": settings.GOOGLE_BOOKS_API_KEY,
+        }
+        response = requests.get(
+            "{api_url}/volumes/{volume_id}".format(
+                api_url=GOOGLE_BOOKS_API_URL,
+                volume_id=volume_id,
+            ),
+            params,
+            timeout=REQUEST_TIMEOUT_SECS,
+        )
         response.raise_for_status()
     except requests.RequestException as e:
         print(f"[ERROR] Failed to fetch book '{volume_id}': {e}")
