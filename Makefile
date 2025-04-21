@@ -30,3 +30,6 @@ ruff-check:
 	@echo "Checking files' format..."
 	@(ruff check . && ruff format . --check)
 	
+run-tests:
+	@echo "Running tests"
+	@(pytest --maxfail=1)

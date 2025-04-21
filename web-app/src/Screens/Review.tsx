@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
-import { graphQLClient } from "../graphqlClient";
 import { Outlet, useParams } from "react-router-dom";
 import {
   Alert,
@@ -11,8 +10,8 @@ import {
   CardContent,
   Divider,
 } from "@mui/material";
-import BookDetails from "./BookDetails";
 import { ReviewLayoutContext } from "../types";
+import { useAuthGraphql } from "../hooks/useAuthGraphql";
 
 const GetBookQuery = gql`
   query GetBook($reviewUuid: UUID!) {
@@ -27,11 +26,12 @@ const GetBookQuery = gql`
 `;
 
 function Review() {
+  const client = useAuthGraphql();
   const { reviewUuid } = useParams<{ reviewUuid: string }>();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["review", reviewUuid],
-    queryFn: () => graphQLClient.request(GetBookQuery, { reviewUuid }),
+    queryFn: () => client.request(GetBookQuery, { reviewUuid }),
     enabled: !!reviewUuid,
   });
 

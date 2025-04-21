@@ -9,6 +9,8 @@ import NotFound from "./Screens/NotFound";
 import Review from "./Screens/Review";
 import BookDetails from "./Screens/BookDetails";
 import GlobalErrorBoundary from "./Screens/GlobalErrorBoundary";
+import { AuthProvider } from "./auth/AuthProvider";
+import { LoginScreen } from "./Screens/LoginScreen";
 
 // TODO: split into different routers per children to have them cleaner e.g. Books, App, Reviews, etc.
 const router = createBrowserRouter([
@@ -20,6 +22,10 @@ const router = createBrowserRouter([
         // Redirect by default to /reviews
         index: true,
         element: <Navigate to="/reviews" replace />,
+      },
+      {
+        path: "login",
+        element: <LoginScreen />,
       },
       {
         path: "reviews",
@@ -52,8 +58,10 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <h1>Platonica</h1>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <h1>Platonica</h1>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

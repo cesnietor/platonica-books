@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
-import { graphQLClient } from "../graphqlClient";
 import BookCover from "./BookCover";
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuthGraphql } from "../hooks/useAuthGraphql";
 
 const GetBookReviewsQuery = gql`
   query {
@@ -20,9 +20,10 @@ const GetBookReviewsQuery = gql`
 `;
 
 function Reviews() {
+  const client = useAuthGraphql();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["reviews"],
-    queryFn: () => graphQLClient.request(GetBookReviewsQuery),
+    queryFn: () => client.request(GetBookReviewsQuery),
   });
 
   const navigate = useNavigate();

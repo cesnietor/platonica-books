@@ -7,7 +7,12 @@ requires-python = ">=3.10"
 dependencies = [
     "django>=5.2",
     "django-cors-headers>=4.7.0",
+    "django-environ>=0.12.0",
+    "djangorestframework>=3.16.0",
+    "djangorestframework-simplejwt>=5.5.0",
     "psycopg>=3.2.6",
+    "pytest>=8.3.5",
+    "pytest-django>=4.11.1",
     "requests>=2.32.3",
     "strawberry-graphql>=0.264.0",
     "strawberry-graphql-django>=0.58.0",

@@ -10,16 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+from datetime import timedelta
 from pathlib import Path
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# initialize env, read .env file
+env = environ.Env(
+    DEBUG=(bool, False),
+    # you can declare default casting here
+)
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+
+#  ENV Variables here:
+GOOGLE_BOOKS_API_KEY = env("GOOGLE_BOOKS_API_KEY")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# FIXME: make it an ENV variable
 SECRET_KEY = "django-insecure-z#x!@mzr&g!da=dt_)54k+!rauc7rpi)4a)!k_s_kuss2-injc"
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -28,19 +44,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
-    "corsheaders",
-    "strawberry_django",
     "app.apps.AppConfig",
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sessions",
     "django.contrib.staticfiles",
+    "rest_framework_simplejwt.token_blacklist",
+    "rest_framework",
+    "strawberry_django",
 ]
 
 MIDDLEWARE = [
@@ -53,6 +70,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+APPEND_SLASH = True
 
 ROOT_URLCONF = "project.urls"
 
@@ -70,6 +89,24 @@ TEMPLATES = [
         },
     },
 ]
+
+#  AUTHENTICATION using JWT
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "app.authentication.CookieJWTAuthentication",  # custom authenticator
+    ),
+}
+
+# settings api: https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=3),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    # TODO: use RS256 algorithm when having RS256 to
+    # avoid sharing the secret on all services.
+    "ALGORITHM": "HS256",
+}
 
 WSGI_APPLICATION = "project.wsgi.application"
 
@@ -102,6 +139,8 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server
 ]
+# If Sending cookies (withCredentials: true)
+CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  # Vite dev server

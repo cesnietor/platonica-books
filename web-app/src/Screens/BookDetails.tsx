@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { gql } from "graphql-request";
-import { graphQLClient } from "../graphqlClient";
 import { useOutletContext } from "react-router-dom";
 import { Alert, Box, Typography, CircularProgress } from "@mui/material";
 import BookCover from "./BookCover";
 import { ReviewLayoutContext } from "../types";
+import { useAuthGraphql } from "../hooks/useAuthGraphql";
 
 const GetBookQuery = gql`
   query GetBook($bookUuid: UUID!) {
@@ -19,11 +19,12 @@ const GetBookQuery = gql`
 `;
 
 function BookDetails() {
+  const client = useAuthGraphql();
   const { bookUuid } = useOutletContext<ReviewLayoutContext>();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["book", bookUuid],
-    queryFn: () => graphQLClient.request(GetBookQuery, { bookUuid }),
+    queryFn: () => client.request(GetBookQuery, { bookUuid }),
     enabled: !!bookUuid,
   });
 
