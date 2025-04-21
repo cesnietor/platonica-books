@@ -38,7 +38,6 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
-          GOOGLE_BOOKS_API_KEY: somekey
         ports: ["5480:5432"]
         options: >-
           --health-cmd pg_isready
@@ -48,6 +47,7 @@ jobs:
 
     env:
       DEBUG: true
+      GOOGLE_BOOKS_API_KEY: somekey
     #   POSTGRES_USER: postgres
     #   POSTGRES_PASSWORD: postgres
     #   POSTGRES_DB: test_db
