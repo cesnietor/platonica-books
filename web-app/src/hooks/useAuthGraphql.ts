@@ -11,7 +11,7 @@ export function useAuthGraphql(): GraphQLClient {
     new GraphQLClient(ENDPOINT, {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-    })
+    }),
   );
 
   // Update the Authorization header whenever `access` changes

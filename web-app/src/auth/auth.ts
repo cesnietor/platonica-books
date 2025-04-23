@@ -16,7 +16,7 @@ const api = axios.create({
 
 export async function login(
   username: string,
-  password: string
+  password: string,
 ): Promise<TokenResponse> {
   return await api
     .post<TokenResponse>("/token/", { username, password })
@@ -36,7 +36,7 @@ export async function logout(access: string, refresh: string) {
       { refresh },
       {
         headers: { Authorization: `Bearer ${access}` },
-      }
+      },
     )
     .then(() => {});
 }
