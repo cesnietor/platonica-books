@@ -18,3 +18,6 @@ prettier-check:
 
 lint-check:
 	@(npm run lint)
+
+graphql-schema-ts-gen:
+	@(npx graphql-codegen)

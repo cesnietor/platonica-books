@@ -34,3 +34,8 @@ select = ["E", "F", "I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["myproject"]
+
+[dependency-groups]
+dev = [
+    "strawberry-graphql[cli]>=0.264.0",
+]

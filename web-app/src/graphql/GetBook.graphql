@@ -1,0 +1,9 @@
+query GetBook($bookUuid: UUID!) {
+  book(uuid: $bookUuid) {
+    title
+    authors
+    pageCount
+    thumbnailUrl
+    imageMediumUrl
+  }
+}
