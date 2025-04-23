@@ -1,0 +1,24 @@
+schema: ../graphql/schema.graphql # or a local schema file
+documents: ./src/graphql/**/*.graphql # your GraphQL queries
+generates:
+  ./src/generated/graphql.ts:
+    overwrite: true # ← force it to always write
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
+    config:
+      # Map your custom (and built-in) scalars to actual TS types
+      scalars:
+        ID: string
+        UUID: string
+        DateTime: string
+        JSON: unknown # avoid `any` here
+      # optionals: make nullable fields `T | null` instead of `T | null | undefined`
+      avoidOptionals: true
+      # drop the `any` return type on rawRequest, since you rarely need it
+      rawRequest: false
+# Optional: watch mode for development
+# watch:
+#   - "./src/graphql/**/*.graphql"
+#   - "../graphql/schema.graphql"
