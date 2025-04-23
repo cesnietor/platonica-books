@@ -28,6 +28,40 @@ jobs:
         run: |
           make ruff-check
 
+  web-app-checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web-app
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting with Prettier
+        run: make prettier-check
+
+      - name: Lint with ESLint
+        run: npm run lint
+
+      - name: Type-check with tsc
+        run: npm run type-check
+
+      - name: Build
+        run: npm run build
+
   django-tests:
     runs-on: ubuntu-latest
 
