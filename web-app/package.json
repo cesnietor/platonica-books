@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc -b --noEmit"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
