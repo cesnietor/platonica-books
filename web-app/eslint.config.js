@@ -25,4 +25,12 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ["src/generated/**/*.ts"],
+    rules: {
+      // turn off certain rules in generated code
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  }
 );
