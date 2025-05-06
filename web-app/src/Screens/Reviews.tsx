@@ -1,29 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { gql } from "graphql-request";
 import BookCover from "./BookCover";
 import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
-
-const GetBookReviewsQuery = gql`
-  query {
-    reviews {
-      uuid
-      book {
-        uuid
-        title
-        thumbnailUrl
-        smallThumbnailUrl
-      }
-    }
-  }
-`;
+import { GetReviewsQuery, getSdk } from "../generated/graphql";
 
 function Reviews() {
   const client = useAuthGraphql();
-  const { data, isLoading, isError } = useQuery({
+
+  const sdk = getSdk(client);
+
+  const { data, isLoading, isError } = useQuery<GetReviewsQuery, Error>({
     queryKey: ["reviews"],
-    queryFn: () => client.request(GetBookReviewsQuery),
+    queryFn: () => sdk.GetReviews(),
   });
 
   const navigate = useNavigate();
@@ -61,53 +50,53 @@ function Reviews() {
                 alignItems: "start",
               }}
             >
-              {data.reviews.map((r) => {
-                const rUUID = r.uuid;
-                const { title, thumbnailUrl, smallThumbnailUrl } = r.book;
-                return (
-                  //  TODO: abstract this
-                  <Grid
-                    key={`review-book-cover-item-${rUUID}`}
-                    container
-                    direction="column"
-                    sx={{
-                      width: 120, // Fixed Width for both Cover and Title
-                    }}
-                  >
-                    <Grid key={`review-book-cover-item-${rUUID}`}>
-                      <BookCover
-                        bookName={title}
-                        imageUrl={thumbnailUrl}
-                        fallbackImageUrl={smallThumbnailUrl}
-                        onClick={() => {
-                          navigate(`/reviews/${rUUID}/book`);
-                        }}
-                      />
-                    </Grid>
+              {data &&
+                data.reviews.map((r) => {
+                  const rUUID = r.uuid;
+                  return (
+                    //  TODO: abstract this
                     <Grid
-                      key={`review-book-title-item-${rUUID}`}
-                      sx={{ width: "100%" }}
+                      key={`review-book-cover-item-${rUUID}`}
+                      container
+                      direction="column"
+                      sx={{
+                        width: 120, // Fixed Width for both Cover and Title
+                      }}
                     >
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          whiteSpace: "normal",
-                          // enable the WebKit line‑clamp technique
-                          display: "-webkit-box",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 2, // Max two lines
-                          overflow: "hidden",
-
-                          // optional: adjust spacing/line-height
-                          lineHeight: 1.3,
-                        }}
+                      <Grid key={`review-book-cover-item-${rUUID}`}>
+                        <BookCover
+                          bookName={r.book?.title}
+                          imageUrl={r.book?.thumbnailUrl || ""}
+                          fallbackImageUrl={r.book?.smallThumbnailUrl || ""}
+                          onClick={() => {
+                            navigate(`/reviews/${rUUID}/book`);
+                          }}
+                        />
+                      </Grid>
+                      <Grid
+                        key={`review-book-title-item-${rUUID}`}
+                        sx={{ width: "100%" }}
                       >
-                        {title}
-                      </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            whiteSpace: "normal",
+                            // enable the WebKit line‑clamp technique
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2, // Max two lines
+                            overflow: "hidden",
+
+                            // optional: adjust spacing/line-height
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {r.book?.title || "N/A"}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                );
-              })}
+                  );
+                })}
             </Grid>
           </Box>
         </CardContent>

@@ -22,6 +22,9 @@ migrate:
 	@echo "Running migrations..."
 	@(python manage.py migrate $(APP))
 
+export_graphql:
+	@(python manage.py export_schema app.graphql.schema --path ./graphql/schema.graphql)
+
 ruff-fix:
 	@echo "Fixing files' format..."
 	@(ruff check . --fix && ruff format .)

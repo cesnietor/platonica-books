@@ -1,0 +1,11 @@
+query GetReviews {
+  reviews {
+    uuid
+    book {
+      uuid
+      title
+      thumbnailUrl
+      smallThumbnailUrl
+    }
+  }
+}

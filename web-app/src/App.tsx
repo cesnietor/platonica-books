@@ -20,6 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         // Redirect by default to /reviews
+        // FIXME it defaults to reviews but if you are logged out it should redirect to login page
         index: true,
         element: <Navigate to="/reviews" replace />,
       },
