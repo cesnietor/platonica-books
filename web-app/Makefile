@@ -16,7 +16,6 @@ prettier-fix:
 prettier-check:
 	@(npx prettier --check .)
 
-
 lint-check:
 	@(npm run lint)
 

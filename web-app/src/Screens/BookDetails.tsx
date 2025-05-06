@@ -1,31 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { gql } from "graphql-request";
 import { useOutletContext } from "react-router-dom";
 import { Alert, Box, Typography, CircularProgress } from "@mui/material";
 import BookCover from "./BookCover";
 import { ReviewLayoutContext } from "../types";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
-
-const GetBookQuery = gql`
-  query GetBook($bookUuid: UUID!) {
-    book(uuid: $bookUuid) {
-      title
-      authors
-      pageCount
-      thumbnailUrl
-      imageMediumUrl
-    }
-  }
-`;
+import { GetBookQuery, getSdk } from "../generated/graphql";
 
 function BookDetails() {
   const client = useAuthGraphql();
   const { bookUuid } = useOutletContext<ReviewLayoutContext>();
 
-  const { data, isLoading, isError } = useQuery({
+  const sdk = getSdk(client);
+
+  const { data, isLoading, isError } = useQuery<GetBookQuery, Error>({
     queryKey: ["book", bookUuid],
-    queryFn: () => client.request(GetBookQuery, { bookUuid }),
-    enabled: !!bookUuid,
+    queryFn: () => sdk.GetBook({ bookUuid: bookUuid || "" }),
+    enabled: Boolean(bookUuid),
   });
 
   if (isLoading) {
@@ -63,8 +53,8 @@ function BookDetails() {
         >
           <BookCover
             bookName={title}
-            imageUrl={imageUrl}
-            fallbackImageUrl={thumbnailUrl}
+            imageUrl={imageUrl || ""}
+            fallbackImageUrl={thumbnailUrl || ""}
             width={"100%"}
             height={"100%"}
           />

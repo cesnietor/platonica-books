@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { gql } from "graphql-request";
 import { Outlet, useParams } from "react-router-dom";
 import {
   Alert,
@@ -12,27 +11,17 @@ import {
 } from "@mui/material";
 import { ReviewLayoutContext } from "../types";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
-
-const GetBookQuery = gql`
-  query GetBook($reviewUuid: UUID!) {
-    review(uuid: $reviewUuid) {
-      title
-      text
-      book {
-        uuid
-      }
-    }
-  }
-`;
+import { GetReviewQuery, getSdk } from "../generated/graphql";
 
 function Review() {
   const client = useAuthGraphql();
   const { reviewUuid } = useParams<{ reviewUuid: string }>();
+  const sdk = getSdk(client);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<GetReviewQuery, Error>({
     queryKey: ["review", reviewUuid],
-    queryFn: () => client.request(GetBookQuery, { reviewUuid }),
-    enabled: !!reviewUuid,
+    queryFn: () => sdk.GetReview({ reviewUuid: reviewUuid || "" }),
+    enabled: Boolean(reviewUuid),
   });
 
   if (isLoading) {
@@ -53,7 +42,7 @@ function Review() {
 
   const { title, text, book } = data.review;
 
-  const contextValue: ReviewLayoutContext = { bookUuid: book.uuid };
+  const contextValue: ReviewLayoutContext = { bookUuid: book?.uuid || "" };
   return (
     <Box p={4} display="flex" justifyContent="center">
       <Card sx={{ display: "flex", width: "100%", maxWidth: 1200 }}>

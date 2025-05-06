@@ -86,6 +86,37 @@ export type GetBookQuery = {
   } | null;
 };
 
+export type GetReviewQueryVariables = Exact<{
+  reviewUuid: Scalars["UUID"]["input"];
+}>;
+
+export type GetReviewQuery = {
+  __typename?: "Query";
+  review: {
+    __typename?: "ReviewInfoType";
+    title: string;
+    text: string;
+    book: { __typename?: "BookInfoType"; uuid: string } | null;
+  } | null;
+};
+
+export type GetReviewsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetReviewsQuery = {
+  __typename?: "Query";
+  reviews: Array<{
+    __typename?: "ReviewInfoType";
+    uuid: string;
+    book: {
+      __typename?: "BookInfoType";
+      uuid: string;
+      title: string;
+      thumbnailUrl: string | null;
+      smallThumbnailUrl: string | null;
+    } | null;
+  }>;
+};
+
 export const GetBookDocument = gql`
   query GetBook($bookUuid: UUID!) {
     book(uuid: $bookUuid) {
@@ -94,6 +125,30 @@ export const GetBookDocument = gql`
       pageCount
       thumbnailUrl
       imageMediumUrl
+    }
+  }
+`;
+export const GetReviewDocument = gql`
+  query GetReview($reviewUuid: UUID!) {
+    review(uuid: $reviewUuid) {
+      title
+      text
+      book {
+        uuid
+      }
+    }
+  }
+`;
+export const GetReviewsDocument = gql`
+  query GetReviews {
+    reviews {
+      uuid
+      book {
+        uuid
+        title
+        thumbnailUrl
+        smallThumbnailUrl
+      }
     }
   }
 `;
@@ -128,6 +183,36 @@ export function getSdk(
             ...wrappedRequestHeaders,
           }),
         "GetBook",
+        "query",
+        variables,
+      );
+    },
+    GetReview(
+      variables: GetReviewQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetReviewQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetReviewQuery>(GetReviewDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        "GetReview",
+        "query",
+        variables,
+      );
+    },
+    GetReviews(
+      variables?: GetReviewsQueryVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<GetReviewsQuery> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<GetReviewsQuery>(GetReviewsDocument, variables, {
+            ...requestHeaders,
+            ...wrappedRequestHeaders,
+          }),
+        "GetReviews",
         "query",
         variables,
       );
