@@ -22,6 +22,8 @@ migrate:
 	@echo "Running migrations..."
 	@(python manage.py migrate $(APP))
 
+#  TODO: change to generate python code from schema
+
 export_graphql:
 	@(python manage.py export_schema app.graphql.schema --path ./graphql/schema.graphql)
 

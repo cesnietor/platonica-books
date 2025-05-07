@@ -5,13 +5,13 @@ import { useAuth } from "./useAuth";
 const ENDPOINT = import.meta.env.VITE_API_ROOT + "/graphql";
 
 export function useAuthGraphql(): GraphQLClient {
-  const { access } = useAuth();
+  const { isAuthenticated: access } = useAuth();
 
   const clientRef = useRef(
     new GraphQLClient(ENDPOINT, {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-    }),
+    })
   );
 
   // Update the Authorization header whenever `access` changes
