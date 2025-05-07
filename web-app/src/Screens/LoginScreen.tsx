@@ -1,68 +1,101 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { login as apiLogin, TokenResponse } from "../auth/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+interface LocationState {
+  from?: Location;
+}
 
 export function LoginScreen() {
   const navigate = useNavigate();
-  const { access } = useAuth();
+  const location = useLocation();
+  const { isAuthenticated: access, login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const loginMutation = useMutation<
-    TokenResponse, // TData
-    Error,
-    { username: string; password: string } // TVariables
-  >({
-    mutationFn: ({ username, password }) => apiLogin(username, password),
-    onSuccess: () => {
-      // navigate once login succeeds
-      navigate("/reviews");
-    },
-  });
+  const state = location.state as LocationState;
+  const from = state?.from?.pathname ?? "/reviews";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await loginMutation.mutateAsync({ username, password });
-  };
-
+  // if you already have a token, no need to log in
   if (access) {
     return <p>You’re already logged in.</p>;
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      // this is your AuthProvider's mutateAsync
+      await login(username, password);
+      // after provider onSuccess, access is set → safe to navigate
+      navigate(from, { replace: true });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Login failed");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      {loginMutation.error && (
-        <div style={{ color: "crimson" }}>{loginMutation.error.message}</div>
-      )}
-      <div>
-        <label>
-          Username
-          <br />
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Password
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <button type="submit" disabled={loginMutation.isPending}>
-        {loginMutation.isPending ? "Logging in…" : "Log In"}
-      </button>
-    </form>
+    <Container maxWidth="xs">
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          mt: 8,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Typography variant="h4" align="center">
+          Platonica
+        </Typography>
+
+        {error && <Alert severity="error">{error}</Alert>}
+
+        <TextField
+          label="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          fullWidth
+        />
+
+        <TextField
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          fullWidth
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isLoading}
+          fullWidth
+        >
+          {isLoading ? "Logging in…" : "Log In"}
+        </Button>
+      </Box>
+    </Container>
   );
 }

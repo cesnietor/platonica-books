@@ -4,6 +4,7 @@ import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
 import { GetReviewsQuery, getSdk } from "../generated/graphql";
+import { LogoutButton } from "./LogoutButton";
 
 function Reviews() {
   const client = useAuthGraphql();
@@ -38,6 +39,8 @@ function Reviews() {
               margin: "10px",
             }}
           >
+            {/* FIXME: move me to a top bar */}
+            <LogoutButton />
             <Typography variant="h5" component="h2" gutterBottom>
               Reviews
             </Typography>

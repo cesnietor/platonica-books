@@ -5,8 +5,9 @@ import { AuthContext } from "./utils";
 
 // AuthProvider Defines interface for JWT authentication
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [access, setAccess] = useState<string | null>(null);
-  const [refresh, setRefresh] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation<
@@ -15,36 +16,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     { username: string; password: string }
   >({
     mutationFn: ({ username, password }) => login(username, password),
-    onSuccess(data) {
-      setAccess(data.access);
-      setRefresh(data.refresh);
+    onSuccess() {
+      setIsAuthenticated(true);
     },
   });
 
   const refreshMutation = useMutation<TokenResponse, Error, void>({
-    mutationFn: () => {
-      if (!refresh) throw new Error("No refresh token available");
-      return refreshToken(refresh);
-    },
-    onSuccess(data) {
-      setAccess(data.access);
-      setRefresh(data.refresh);
+    mutationFn: () => refreshToken(), // reads cookie, returns 200/401
+    onSuccess() {
+      setIsAuthenticated(true);
     },
     onError() {
       // If refresh fails (expired/blacklisted), drop credentials
-      setAccess(null);
-      setRefresh(null);
+      setIsAuthenticated(false);
+    },
+    onSettled: () => {
+      // whether success or failure, we’re done checking
+      setIsAuthLoading(false);
     },
   });
 
   const logoutMutation = useMutation<void, Error, void>({
-    mutationFn: () => {
-      if (!access || !refresh) return Promise.resolve();
-      return logout(access, refresh);
-    },
+    mutationFn: () => logout(),
     onSuccess() {
-      setAccess(null);
-      setRefresh(null);
+      setIsAuthenticated(false);
       queryClient.clear(); // clear any cached queries
     },
   });
@@ -54,7 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // auto‑refresh on mount (if authenticated, refresh token is set in cookies)
   useEffect(() => {
-    doRefresh(); // browser will send the refresh cookie
+    console.log("doRefresh");
+    doRefresh();
   }, [doRefresh]);
 
   // Public API
@@ -65,7 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        access,
+        isAuthenticated,
+        isAuthLoading,
         login: loginFn,
         logout: logoutFn,
       }}

@@ -5,7 +5,7 @@ import { useAuth } from "./useAuth";
 const ENDPOINT = import.meta.env.VITE_API_ROOT + "/graphql";
 
 export function useAuthGraphql(): GraphQLClient {
-  const { access } = useAuth();
+  const { isAuthenticated: access } = useAuth();
 
   const clientRef = useRef(
     new GraphQLClient(ENDPOINT, {

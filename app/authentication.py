@@ -9,16 +9,10 @@ REFRESH_COOKIE = "refresh"
 
 class CookieJWTAuthentication(JWTAuthentication):
     """
-    First tries the Authorization header, then looks for an "access" cookie.
+    Uses "access" cookie to to authenticate
     """
 
     def authenticate(self, request: Request):
-        # Try the default header logic
-        header_auth = super().authenticate(request)
-        if header_auth is not None:
-            return header_auth
-
-        # Fallback to cookie
         raw_token = request.COOKIES.get(ACCESS_COOKIE)
         if not raw_token:
             return None

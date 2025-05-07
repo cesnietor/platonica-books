@@ -11,6 +11,8 @@ import BookDetails from "./Screens/BookDetails";
 import GlobalErrorBoundary from "./Screens/GlobalErrorBoundary";
 import { AuthProvider } from "./auth/AuthProvider";
 import { LoginScreen } from "./Screens/LoginScreen";
+import { RequireAuth } from "./auth/RequireAuth";
+import { Typography } from "@mui/material";
 
 // TODO: split into different routers per children to have them cleaner e.g. Books, App, Reviews, etc.
 const router = createBrowserRouter([
@@ -18,36 +20,44 @@ const router = createBrowserRouter([
     path: "/",
     errorElement: <GlobalErrorBoundary />, //  Catch errors from every child route
     children: [
-      {
-        // Redirect by default to /reviews
-        // FIXME it defaults to reviews but if you are logged out it should redirect to login page
-        index: true,
-        element: <Navigate to="/reviews" replace />,
-      },
+      // Public routes
       {
         path: "login",
         element: <LoginScreen />,
       },
+      // Protected routes
       {
-        path: "reviews",
-        element: <Reviews />,
-      },
-      {
-        path: "reviews/:reviewUuid",
-        element: <Review />,
+        element: <RequireAuth />, // Serves as parent element to authenticate routes
         children: [
           {
-            path: "book",
-            element: <BookDetails />,
-            errorElement: <GlobalErrorBoundary />,
+            // Redirect by default to /reviews
+            index: true,
+            element: <Navigate to="/reviews" replace />,
+          },
+          {
+            path: "login",
+            element: <LoginScreen />,
+          },
+          {
+            path: "reviews",
+            element: <Reviews />,
+          },
+          {
+            path: "reviews/:reviewUuid",
+            element: <Review />,
+            children: [
+              {
+                path: "book",
+                element: <BookDetails />,
+                errorElement: <GlobalErrorBoundary />,
+              },
+            ],
           },
         ],
       },
-      {
-        path: "books",
-      },
     ],
   },
+  // Fallback NotFound
   {
     path: "*",
     element: <NotFound />,
@@ -60,7 +70,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <h1>Platonica</h1>
+        <Typography variant="h4" align="left">
+          Platonica
+        </Typography>
         <RouterProvider router={router} />
       </AuthProvider>
     </QueryClientProvider>

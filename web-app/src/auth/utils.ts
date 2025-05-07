@@ -2,7 +2,8 @@ import { createContext } from "react";
 import { TokenResponse } from "./auth";
 
 type AuthContextValue = {
-  access: string | null;
+  isAuthenticated: boolean;
+  isAuthLoading: boolean;
   login: (username: string, password: string) => Promise<TokenResponse>;
   logout: () => Promise<void>;
 };

@@ -23,20 +23,12 @@ export async function login(
     .then((res) => res.data);
 }
 
-export async function refreshToken(refresh: string): Promise<TokenResponse> {
+export async function refreshToken(): Promise<TokenResponse> {
   return await api
-    .post<TokenResponse>("/token/refresh/", { refresh })
+    .post<TokenResponse>("/token/refresh/")
     .then((res) => res.data);
 }
 
-export async function logout(access: string, refresh: string) {
-  return await api
-    .post(
-      "/logout/",
-      { refresh },
-      {
-        headers: { Authorization: `Bearer ${access}` },
-      },
-    )
-    .then(() => {});
+export async function logout() {
+  return await api.post("/logout/").then(() => {});
 }
