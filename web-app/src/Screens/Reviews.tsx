@@ -4,7 +4,6 @@ import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
 import { GetReviewsQuery, getSdk } from "../generated/graphql";
-import { LogoutButton } from "./LogoutButton";
 
 function Reviews() {
   const client = useAuthGraphql();
@@ -39,8 +38,6 @@ function Reviews() {
               margin: "10px",
             }}
           >
-            {/* FIXME: move me to a top bar */}
-            <LogoutButton />
             <Typography variant="h5" component="h2" gutterBottom>
               Reviews
             </Typography>
@@ -56,6 +53,10 @@ function Reviews() {
               {data &&
                 data.reviews.map((r) => {
                   const rUUID = r.uuid;
+                  const authors = r.book?.authors ?? [];
+                  const [first, ...rest] = authors;
+                  const bookAuthor =
+                    (first ?? "") + (rest.length > 0 ? "*" : "");
                   return (
                     //  TODO: abstract this
                     <Grid
@@ -89,12 +90,26 @@ function Reviews() {
                             WebkitBoxOrient: "vertical",
                             WebkitLineClamp: 2, // Max two lines
                             overflow: "hidden",
-
                             // optional: adjust spacing/line-height
                             lineHeight: 1.3,
                           }}
                         >
                           {r.book?.title || "N/A"}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            whiteSpace: "normal",
+                            // enable the WebKit line‑clamp technique
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 1, // Max two lines
+                            overflow: "hidden",
+                            // optional: adjust spacing/line-height
+                            lineHeight: 2,
+                          }}
+                        >
+                          by {bookAuthor || "N/A"}
                         </Typography>
                       </Grid>
                     </Grid>

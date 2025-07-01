@@ -22,7 +22,7 @@ const StyledCover = styled(Box)<{
   overflow: "hidden",
   boxShadow: theme.shadows[10],
   backgroundColor: theme.palette.grey[300],
-  borderRadius: theme.shape.borderRadius * 1,
+  borderRadius: theme.shape.borderRadius,
   // If no image we show a white box but still needs on hover effect
   transition: "background-color 0.3s",
   "&:hover": {

@@ -113,6 +113,7 @@ export type GetReviewsQuery = {
       title: string;
       thumbnailUrl: string | null;
       smallThumbnailUrl: string | null;
+      authors: Array<string> | null;
     } | null;
   }>;
 };
@@ -148,6 +149,7 @@ export const GetReviewsDocument = gql`
         title
         thumbnailUrl
         smallThumbnailUrl
+        authors
       }
     }
   }
