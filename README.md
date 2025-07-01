@@ -3,6 +3,8 @@
 Platonica is an app to share your reviews of a Book but in a more personal/thoughtful way.
 Longer summaries, so that you can remember what the book was about. You may add a Goodreads link to the book for more information about it.
 
+![Home](attachments/PlatonicaHome.png)
+
 ### Server
 
 Project uses UV as the package manager.
