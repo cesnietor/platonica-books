@@ -3,6 +3,7 @@ import Reviews from "./Screens/Reviews";
 import {
   createBrowserRouter,
   Navigate,
+  Outlet,
   RouterProvider,
 } from "react-router-dom";
 import NotFound from "./Screens/NotFound";
@@ -12,7 +13,17 @@ import GlobalErrorBoundary from "./Screens/GlobalErrorBoundary";
 import { AuthProvider } from "./auth/AuthProvider";
 import { LoginScreen } from "./Screens/LoginScreen";
 import { RequireAuth } from "./auth/RequireAuth";
-import { Typography } from "@mui/material";
+import TopBar from "./TopBar";
+
+// Layout wraps TopBar around authenticated routes
+function AppLayout() {
+  return (
+    <>
+      <TopBar />
+      <Outlet />
+    </>
+  );
+}
 
 // TODO: split into different routers per children to have them cleaner e.g. Books, App, Reviews, etc.
 const router = createBrowserRouter([
@@ -30,26 +41,31 @@ const router = createBrowserRouter([
         element: <RequireAuth />, // Serves as parent element to authenticate routes
         children: [
           {
-            // Redirect by default to /reviews
-            index: true,
-            element: <Navigate to="/reviews" replace />,
-          },
-          {
-            path: "login",
-            element: <LoginScreen />,
-          },
-          {
-            path: "reviews",
-            element: <Reviews />,
-          },
-          {
-            path: "reviews/:reviewUuid",
-            element: <Review />,
+            element: <AppLayout />,
             children: [
               {
-                path: "book",
-                element: <BookDetails />,
-                errorElement: <GlobalErrorBoundary />,
+                // Redirect by default to /reviews
+                index: true,
+                element: <Navigate to="/reviews" replace />,
+              },
+              {
+                path: "login",
+                element: <LoginScreen />,
+              },
+              {
+                path: "reviews",
+                element: <Reviews />,
+              },
+              {
+                path: "reviews/:reviewUuid",
+                element: <Review />,
+                children: [
+                  {
+                    path: "book",
+                    element: <BookDetails />,
+                    errorElement: <GlobalErrorBoundary />,
+                  },
+                ],
               },
             ],
           },
@@ -70,9 +86,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Typography variant="h4" align="left">
-          Platonica
-        </Typography>
         <RouterProvider router={router} />
       </AuthProvider>
     </QueryClientProvider>

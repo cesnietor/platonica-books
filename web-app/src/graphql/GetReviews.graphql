@@ -6,6 +6,7 @@ query GetReviews {
       title
       thumbnailUrl
       smallThumbnailUrl
+      authors
     }
   }
 }

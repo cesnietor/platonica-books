@@ -28,7 +28,7 @@ export function LoginScreen() {
 
   // if you already have a token, no need to log in
   if (access) {
-    return <p>You’re already logged in.</p>;
+    navigate(from, { replace: true });
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
