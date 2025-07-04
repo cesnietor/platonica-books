@@ -26,7 +26,7 @@ import Theme from "./Theme";
 
 const removeStylesExportDOM = (
   editor: LexicalEditor,
-  target: LexicalNode
+  target: LexicalNode,
 ): DOMExportOutput => {
   const output = target.exportDOM(editor);
   if (output && isHTMLElement(output.element)) {
