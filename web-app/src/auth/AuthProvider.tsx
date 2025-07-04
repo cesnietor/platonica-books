@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // auto‑refresh on mount (if authenticated, refresh token is set in cookies)
   useEffect(() => {
-    console.log("doRefresh");
     doRefresh();
   }, [doRefresh]);
 
