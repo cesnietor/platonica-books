@@ -12,6 +12,7 @@ import {
 import { ReviewLayoutContext } from "../types";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
 import { GetReviewQuery, getSdk } from "../generated/graphql";
+import Editor from "../Editor/Editor";
 
 function Review() {
   const client = useAuthGraphql();
@@ -40,12 +41,18 @@ function Review() {
     );
   }
 
-  const { title, text, book } = data.review;
+  const { title, book } = data.review;
 
   const contextValue: ReviewLayoutContext = { bookUuid: book?.uuid || "" };
   return (
     <Box p={4} display="flex" justifyContent="center">
-      <Card sx={{ display: "flex", width: "100%", maxWidth: 1200 }}>
+      <Card
+        sx={{
+          display: "flex",
+          width: "100%",
+          maxWidth: 1200,
+        }}
+      >
         <CardContent
           sx={{
             display: "flex",
@@ -59,9 +66,8 @@ function Review() {
             <Typography variant="h4" gutterBottom>
               {title}
             </Typography>
-            <Typography variant="body1" paragraph>
-              {text}
-            </Typography>
+
+            <Editor />
           </Box>
 
           {/* Vertical Divider */}
