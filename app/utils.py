@@ -1,4 +1,5 @@
 from functools import lru_cache
+import json
 from typing import List, Optional
 from uuid import UUID
 
@@ -33,6 +34,7 @@ def get_data_for_review(review: Optional[Review]) -> Optional[ReviewInfo]:
         title=review.title,
         text=review.text,
         book=book,
+        content=json.dumps(review.content),
     )
 
 

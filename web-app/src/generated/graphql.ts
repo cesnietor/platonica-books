@@ -47,6 +47,15 @@ export type BookInfoType = {
   uuid: Scalars["String"]["output"];
 };
 
+export type Mutation = {
+  __typename?: "Mutation";
+  updateReview: Maybe<ReviewInfoType>;
+};
+
+export type MutationUpdateReviewArgs = {
+  input: UpdateReviewInput;
+};
+
 export type Query = {
   __typename?: "Query";
   book: Maybe<BookInfoType>;
@@ -65,9 +74,16 @@ export type QueryReviewArgs = {
 export type ReviewInfoType = {
   __typename?: "ReviewInfoType";
   book: Maybe<BookInfoType>;
+  content: Scalars["String"]["output"];
   text: Scalars["String"]["output"];
   title: Scalars["String"]["output"];
   uuid: Scalars["String"]["output"];
+};
+
+export type UpdateReviewInput = {
+  content: InputMaybe<Scalars["String"]["input"]>;
+  title: Scalars["String"]["input"];
+  uuid: Scalars["UUID"]["input"];
 };
 
 export type GetBookQueryVariables = Exact<{
@@ -96,6 +112,7 @@ export type GetReviewQuery = {
     __typename?: "ReviewInfoType";
     title: string;
     text: string;
+    content: string;
     book: { __typename?: "BookInfoType"; uuid: string } | null;
   } | null;
 };
@@ -118,6 +135,20 @@ export type GetReviewsQuery = {
   }>;
 };
 
+export type UpdateReviewMutationVariables = Exact<{
+  input: UpdateReviewInput;
+}>;
+
+export type UpdateReviewMutation = {
+  __typename?: "Mutation";
+  updateReview: {
+    __typename?: "ReviewInfoType";
+    uuid: string;
+    title: string;
+    content: string;
+  } | null;
+};
+
 export const GetBookDocument = gql`
   query GetBook($bookUuid: UUID!) {
     book(uuid: $bookUuid) {
@@ -134,6 +165,7 @@ export const GetReviewDocument = gql`
     review(uuid: $reviewUuid) {
       title
       text
+      content
       book {
         uuid
       }
@@ -151,6 +183,15 @@ export const GetReviewsDocument = gql`
         smallThumbnailUrl
         authors
       }
+    }
+  }
+`;
+export const UpdateReviewDocument = gql`
+  mutation UpdateReview($input: UpdateReviewInput!) {
+    updateReview(input: $input) {
+      uuid
+      title
+      content
     }
   }
 `;
@@ -216,6 +257,22 @@ export function getSdk(
           }),
         "GetReviews",
         "query",
+        variables,
+      );
+    },
+    UpdateReview(
+      variables: UpdateReviewMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<UpdateReviewMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<UpdateReviewMutation>(
+            UpdateReviewDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders },
+          ),
+        "UpdateReview",
+        "mutation",
         variables,
       );
     },

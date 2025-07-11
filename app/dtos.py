@@ -24,3 +24,4 @@ class ReviewInfo:
     title: str
     text: str
     book: Optional[BookInfo]
+    content: Optional[str]

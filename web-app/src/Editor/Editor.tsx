@@ -1,7 +1,10 @@
 import "./style.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import {
+  InitialConfigType,
+  LexicalComposer,
+} from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -19,7 +22,7 @@ import {
   ParagraphNode,
   TextNode,
 } from "lexical";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ToolbarPlugin from "./ToolBarPlugin";
 import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import Theme from "./Theme";
@@ -141,7 +144,19 @@ function MyOnChangePlugin(props: {
   return null;
 }
 
-const editorConfig = {
+// Reload Editor At mount
+function ResetEditorPlugin({ contentJson }: { contentJson: string }) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    editor.update(() => {
+      const state = editor.parseEditorState(contentJson);
+      editor.setEditorState(state);
+    });
+  }, [editor, contentJson]);
+  return null;
+}
+
+const editorConfig: InitialConfigType = {
   html: {
     export: exportMap,
     import: constructImportMap(),
@@ -152,25 +167,52 @@ const editorConfig = {
   theme: Theme,
 };
 
-function Editor() {
-  const [editorState, setEditorState] = useState<null | string>();
+export interface MyEditorProps {
+  initialContent: string;
+  onSave: (content: string) => void;
+}
 
-  function onChange(editorState: EditorState) {
-    // Serialize Editor state
-    const editorStateJson = editorState.toJSON();
-    // Convert Javascript object to string
-    setEditorState(JSON.stringify(editorStateJson));
-  }
+function Editor({ initialContent, onSave }: MyEditorProps) {
+  const [content, setContent] = useState<string>(initialContent);
+  const [isDirty, setDirty] = useState(false);
+  const [isSaving, setSaving] = useState(false);
 
-  // TODO: submit editorState or show that the document
-  // is ready to update or something
-  console.log("editorState", editorState);
+  // FIXME: maybe remove this
+  // FIXME: if using, fix dirty state cause is being set to true always on mount
+  const handleChange = useCallback((editorState: EditorState) => {
+    editorState.read(() => {
+      const stateString = editorState.toJSON();
+      setContent(JSON.stringify(stateString));
+      setDirty(true);
+    });
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    if (!isDirty) return;
+    setSaving(true);
+    try {
+      onSave(content);
+      setDirty(false);
+    } finally {
+      setSaving(false);
+    }
+  }, [content, onSave, isDirty]);
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <LexicalComposer
+      initialConfig={{
+        editorState: initialContent,
+        ...editorConfig,
+      }}
+    >
       <div className="editor-container">
         <ToolbarPlugin />
+        {/* FIXME: make this button nicer */}
+        <button onClick={handleSave} disabled={!isDirty || isSaving}>
+          {isSaving ? "Saving…" : isDirty ? "Save" : "Saved"}
+        </button>
         <div className="editor-inner">
+          <ResetEditorPlugin contentJson={initialContent} />
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -185,7 +227,7 @@ function Editor() {
           />
           <HistoryPlugin />
           <AutoFocusPlugin />
-          <MyOnChangePlugin onChange={onChange} />
+          <MyOnChangePlugin onChange={handleChange} />
         </div>
       </div>
     </LexicalComposer>
