@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -28,7 +28,9 @@ export function LoginScreen() {
 
   // if you already have a token, no need to log in
   if (access) {
-    navigate(from, { replace: true });
+    // This tells React Router to redirect as part of render,
+    // rather than doing an imperative navigate() call.
+    return <Navigate to={from} replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,16 +73,20 @@ export function LoginScreen() {
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
+          id="username"
           label="Username"
           value={username}
+          autoComplete="username"
           onChange={(e) => setUsername(e.target.value)}
           required
           fullWidth
         />
 
         <TextField
+          id="password"
           label="Password"
           type="password"
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
