@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="review",
             name="content",
-            field=models.JSONField(blank=True, default=list, null=True),
+            field=models.JSONField(blank=True, default=None, null=True),
         ),
     ]

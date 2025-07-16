@@ -17,7 +17,7 @@ type ReviewInfoType {
   uuid: String!
   title: String!
   text: String!
-  content: String!
+  content: String
   book: BookInfoType
 }
 

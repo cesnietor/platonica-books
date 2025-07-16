@@ -74,7 +74,7 @@ export type QueryReviewArgs = {
 export type ReviewInfoType = {
   __typename?: "ReviewInfoType";
   book: Maybe<BookInfoType>;
-  content: Scalars["String"]["output"];
+  content: Maybe<Scalars["String"]["output"]>;
   text: Scalars["String"]["output"];
   title: Scalars["String"]["output"];
   uuid: Scalars["String"]["output"];
@@ -112,7 +112,7 @@ export type GetReviewQuery = {
     __typename?: "ReviewInfoType";
     title: string;
     text: string;
-    content: string;
+    content: string | null;
     book: { __typename?: "BookInfoType"; uuid: string } | null;
   } | null;
 };
@@ -145,7 +145,7 @@ export type UpdateReviewMutation = {
     __typename?: "ReviewInfoType";
     uuid: string;
     title: string;
-    content: string;
+    content: string | null;
   } | null;
 };
 

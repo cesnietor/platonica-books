@@ -29,12 +29,13 @@ def get_reviews() -> Optional[List[ReviewInfo]]:
 
 def get_data_for_review(review: Optional[Review]) -> Optional[ReviewInfo]:
     book = get_data_for_book(review.book)
+    content = json.dumps(review.content) if review.content is not None else None
     return ReviewInfo(
         uuid=review.uuid,
         title=review.title,
         text=review.text,
         book=book,
-        content=json.dumps(review.content),
+        content=content,
     )
 
 
