@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Outlet, useParams } from "react-router-dom";
 import {
   Alert,
@@ -11,7 +11,12 @@ import {
 } from "@mui/material";
 import { ReviewLayoutContext } from "../types";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
-import { GetReviewQuery, getSdk } from "../generated/graphql";
+import {
+  GetReviewQuery,
+  getSdk,
+  UpdateReviewMutation,
+  UpdateReviewMutationVariables,
+} from "../generated/graphql";
 import Editor from "../Editor/Editor";
 
 function Review() {
@@ -25,6 +30,33 @@ function Review() {
     enabled: Boolean(reviewUuid),
   });
 
+  // FIXME: Handle error and loading state
+  // TODO: Add success message after saving
+  const {
+    mutate,
+    // data,
+    // error,
+    // isPending: isLoading,
+    // isError,
+    // isSuccess,
+  } = useMutation<
+    UpdateReviewMutation["updateReview"], // mutation result
+    Error, // error
+    UpdateReviewMutationVariables // variables type
+  >({
+    mutationFn: (variables) =>
+      sdk.UpdateReview(variables).then((res) => res.updateReview),
+  });
+
+  function onSave(content: string): void {
+    mutate({
+      input: {
+        uuid: reviewUuid || "",
+        title: "New Title",
+        content: content,
+      },
+    });
+  }
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
@@ -41,7 +73,7 @@ function Review() {
     );
   }
 
-  const { title, book } = data.review;
+  const { title, content, book } = data.review;
 
   const contextValue: ReviewLayoutContext = { bookUuid: book?.uuid || "" };
   return (
@@ -67,7 +99,7 @@ function Review() {
               {title}
             </Typography>
 
-            <Editor />
+            <Editor initialContent={content} onSave={onSave} />
           </Box>
 
           {/* Vertical Divider */}

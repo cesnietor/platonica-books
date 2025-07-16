@@ -29,6 +29,7 @@ class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     title = models.CharField(max_length=70)
     text = models.TextField()
+    content = models.JSONField(blank=True, null=True, default=None)
 
     def __str__(self):
         return self.text

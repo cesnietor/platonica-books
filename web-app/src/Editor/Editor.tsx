@@ -1,10 +1,13 @@
 import "./style.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import {
+  InitialConfigType,
+  LexicalComposer,
+} from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import {
   $isTextNode,
@@ -19,10 +22,11 @@ import {
   ParagraphNode,
   TextNode,
 } from "lexical";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ToolbarPlugin from "./ToolBarPlugin";
 import { parseAllowedColor, parseAllowedFontSize } from "./styleConfig";
 import Theme from "./Theme";
+import { Button, FormControlLabel, Switch } from "@mui/material";
 
 const removeStylesExportDOM = (
   editor: LexicalEditor,
@@ -120,6 +124,7 @@ const constructImportMap = (): DOMConversionMap => {
   return importMap;
 };
 
+// FIXME: handle errors properly
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -127,21 +132,29 @@ function onError(error: Error): void {
   console.error(error);
 }
 
-// TODO: test handle onchange as we wish
-function MyOnChangePlugin(props: {
-  onChange: (editorState: EditorState) => void;
-}) {
+// Reload Editor at mount, this loads initial content
+function ResetEditorPlugin({ contentJson }: { contentJson?: string | null }) {
   const [editor] = useLexicalComposerContext();
-  const { onChange } = props;
   useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      onChange(editorState);
-    });
-  }, [editor, onChange]);
+    if (contentJson) {
+      editor.update(() => {
+        const state = editor.parseEditorState(contentJson);
+        editor.setEditorState(state);
+      });
+    }
+  }, [editor, contentJson]);
   return null;
 }
 
-const editorConfig = {
+function EditablePlugin({ editable }: { editable: boolean }) {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    editor.setEditable(editable);
+  }, [editor, editable]);
+  return null;
+}
+
+const editorConfig: InitialConfigType = {
   html: {
     export: exportMap,
     import: constructImportMap(),
@@ -152,25 +165,91 @@ const editorConfig = {
   theme: Theme,
 };
 
-function Editor() {
-  const [editorState, setEditorState] = useState<null | string>();
+export interface MyEditorProps {
+  initialContent?: string | null;
+  onSave: (content: string) => void;
+}
 
-  function onChange(editorState: EditorState) {
-    // Serialize Editor state
-    const editorStateJson = editorState.toJSON();
-    // Convert Javascript object to string
-    setEditorState(JSON.stringify(editorStateJson));
+// Check Lexical Basic struct
+function isValidState(raw: string | undefined | null): boolean {
+  try {
+    if (!raw) {
+      return false;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed?.root?.children);
+  } catch {
+    return false;
   }
+}
 
-  // TODO: submit editorState or show that the document
-  // is ready to update or something
-  console.log("editorState", editorState);
+function Editor({ initialContent, onSave }: MyEditorProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [content, setContent] = useState<string | null | undefined>(
+    initialContent,
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  // called by OnChangePlugin only when is in edit mode
+  const handleChange = useCallback(
+    (editorState: EditorState) => {
+      if (!isEditing) return;
+      editorState.read(() => {
+        const newState = JSON.stringify(editorState.toJSON());
+        setContent(newState);
+      });
+    },
+    [isEditing],
+  );
+
+  const handleSave = useCallback(async () => {
+    if (!isEditing || content == null) return;
+    setIsSaving(true);
+    try {
+      onSave(content);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [isEditing, content, onSave]);
+
+  // memoize the initializer so Lexical only calls it once per mount
+  const getInitialState = useCallback(
+    () => (isValidState(content) ? content : null),
+    [content],
+  );
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <LexicalComposer
+      initialConfig={{
+        editorState: getInitialState(),
+        ...editorConfig,
+      }}
+    >
+      <FormControlLabel
+        control={
+          <Switch
+            checked={isEditing}
+            onChange={() => setIsEditing((prev) => !prev)}
+            color="primary"
+          />
+        }
+        label={isEditing ? "Disable Edit" : "Edit"}
+      />
+
+      <Button
+        onMouseDown={(e) => e.preventDefault()}
+        variant="outlined"
+        onClick={handleSave}
+        disabled={!isEditing || isSaving}
+      >
+        {isSaving ? "Saving…" : "Save"}
+      </Button>
       <div className="editor-container">
+        {/* TODO: Disable toolbar depending on Edit mode */}
         <ToolbarPlugin />
         <div className="editor-inner">
+          <EditablePlugin editable={isEditing} />
+          <ResetEditorPlugin contentJson={initialContent} />
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -184,8 +263,7 @@ function Editor() {
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />
-          <AutoFocusPlugin />
-          <MyOnChangePlugin onChange={onChange} />
+          <OnChangePlugin onChange={handleChange} />
         </div>
       </div>
     </LexicalComposer>

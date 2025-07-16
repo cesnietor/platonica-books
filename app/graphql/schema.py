@@ -1,10 +1,17 @@
+import json
 from typing import List, Optional
 from uuid import UUID
 
 import strawberry
 
-from app.graphql.types import BookInfoType, ReviewInfoType
-from app.utils import get_book_info, get_review_info, get_reviews
+from app.graphql.types import BookInfoType, ReviewInfoType, UpdateReviewInput
+from app.utils import (
+    get_book_info,
+    get_data_for_review,
+    get_review_from_db,
+    get_review_info,
+    get_reviews,
+)
 
 
 @strawberry.type
@@ -22,6 +29,7 @@ class Query:
                 title=info.title,
                 text=info.text,
                 book=info.book,
+                content=info.content,
             )
 
     @strawberry.field
@@ -44,4 +52,34 @@ class Query:
         return None
 
 
-schema = strawberry.Schema(query=Query)
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def update_review(self, input: UpdateReviewInput) -> ReviewInfoType:
+        try:
+            parsed_content = json.loads(input.content)
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON string in 'content'")
+
+        # Save to DB as real JSON
+        review = get_review_from_db(uuid=input.uuid)
+        if review is None:
+            print(f"[ERROR] Book not found '{input.uuid}'")
+            return None
+
+        review.content = parsed_content
+        review.save()
+
+        # TODO: might want just to return and make the UI refresh
+        reviewInfo = get_data_for_review(review)
+
+        return ReviewInfoType(
+            uuid=reviewInfo.uuid,
+            title=reviewInfo.title,
+            text=reviewInfo.text,
+            book=reviewInfo.book,
+            content=reviewInfo.content,
+        )
+
+
+schema = strawberry.Schema(query=Query, mutation=Mutation)

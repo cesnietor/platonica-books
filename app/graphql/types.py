@@ -25,3 +25,11 @@ class ReviewInfoType:
     title: str
     text: str
     book: Optional[BookInfoType]
+    content: Optional[str]
+
+
+@strawberry.input
+class UpdateReviewInput:
+    uuid: str
+    title: str
+    content: str  # stringified JSON

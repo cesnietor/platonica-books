@@ -13,17 +13,28 @@ type BookInfoType {
   googleBooksId: String
 }
 
+type ReviewInfoType {
+  uuid: String!
+  title: String!
+  text: String!
+  content: String
+  book: BookInfoType
+}
+
+input UpdateReviewInput {
+  uuid: UUID!
+  title: String!
+  content: String
+}
+
 type Query {
   reviews: [ReviewInfoType!]!
   review(uuid: UUID!): ReviewInfoType
   book(uuid: UUID!): BookInfoType
 }
 
-type ReviewInfoType {
-  uuid: String!
-  title: String!
-  text: String!
-  book: BookInfoType
+type Mutation {
+  updateReview(input: UpdateReviewInput!): ReviewInfoType
 }
 
 scalar UUID
