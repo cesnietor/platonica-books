@@ -5,7 +5,6 @@ from uuid import UUID
 import strawberry
 
 from app.graphql.types import BookInfoType, ReviewInfoType, UpdateReviewInput
-from app.models import Review
 from app.utils import (
     get_book_info,
     get_data_for_review,
@@ -55,10 +54,8 @@ class Query:
 
 @strawberry.type
 class Mutation:
-
     @strawberry.mutation
     def update_review(self, input: UpdateReviewInput) -> ReviewInfoType:
-
         try:
             parsed_content = json.loads(input.content)
         except json.JSONDecodeError:

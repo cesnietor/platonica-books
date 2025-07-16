@@ -30,7 +30,7 @@ import { Button, FormControlLabel, Switch } from "@mui/material";
 
 const removeStylesExportDOM = (
   editor: LexicalEditor,
-  target: LexicalNode
+  target: LexicalNode,
 ): DOMExportOutput => {
   const output = target.exportDOM(editor);
   if (output && isHTMLElement(output.element)) {
@@ -186,7 +186,7 @@ function isValidState(raw: string | undefined | null): boolean {
 function Editor({ initialContent, onSave }: MyEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState<string | null | undefined>(
-    initialContent
+    initialContent,
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -199,7 +199,7 @@ function Editor({ initialContent, onSave }: MyEditorProps) {
         setContent(newState);
       });
     },
-    [isEditing]
+    [isEditing],
   );
 
   const handleSave = useCallback(async () => {
@@ -215,7 +215,7 @@ function Editor({ initialContent, onSave }: MyEditorProps) {
   // memoize the initializer so Lexical only calls it once per mount
   const getInitialState = useCallback(
     () => (isValidState(content) ? content : null),
-    [content]
+    [content],
   );
 
   return (
