@@ -5,7 +5,7 @@ query GetReviews {
       uuid
       title
       thumbnailUrl
-      smallThumbnailUrl
+      imageSmallUrl
       authors
     }
   }

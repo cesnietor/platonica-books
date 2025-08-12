@@ -71,7 +71,7 @@ function Reviews() {
                         <BookCover
                           bookName={r.book?.title}
                           imageUrl={r.book?.thumbnailUrl || ""}
-                          fallbackImageUrl={r.book?.smallThumbnailUrl || ""}
+                          fallbackImageUrl={r.book?.imageSmallUrl || ""}
                           onClick={() => {
                             navigate(`/reviews/${rUUID}/book`);
                           }}

@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from functools import lru_cache
 from typing import List, Optional
 from uuid import UUID
@@ -13,7 +14,20 @@ from .dtos import BookInfo, ReviewInfo
 # TODO: Google recommends only fetching desired
 # fields e.g. `?fields=id,volumeInfo(title,authors,imageLinks/thumbnail)`
 GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1"
+GOOGLE_BOOKS_FRONTCOVER_URL = "https://books.google.com/books/content/images/frontcover"
 REQUEST_TIMEOUT_SECS = 5
+
+
+class CoverSize(Enum):
+    """Enum representing supported Google Books cover sizes."""
+
+    SMALL = (192, 288)  # ~ small
+    MEDIUM = (320, 480)
+    LARGE = (512, 768)
+
+    def __init__(self, width: int, height: int) -> None:
+        self.width = width
+        self.height = height
 
 
 def get_reviews() -> Optional[List[ReviewInfo]]:
@@ -113,7 +127,10 @@ def fetch_book_data(uuid: UUID, volume_id: str) -> Optional[BookInfo]:
 
     data = response.json()
     volume_info = data.get("volumeInfo", {})
-    image_links = volume_info.get("imageLinks", {})
+
+    small_image_url = get_google_books_cover_url(volume_id, CoverSize.SMALL)
+    thumbnail_image_url = get_google_books_cover_url(volume_id, CoverSize.MEDIUM)
+    medium_image_url = get_google_books_cover_url(volume_id, CoverSize.LARGE)
 
     return BookInfo(
         uuid=uuid,
@@ -122,8 +139,23 @@ def fetch_book_data(uuid: UUID, volume_id: str) -> Optional[BookInfo]:
         authors=volume_info.get("authors"),
         date_published=volume_info.get("publishedDate"),
         page_count=volume_info.get("pageCount"),
-        thumbnail_url=image_links.get("thumbnail"),
-        small_thumbnail_url=image_links.get("smallThumbnailUrl"),
-        image_small_url=image_links.get("small"),
-        image_medium_url=image_links.get("medium"),
+        thumbnail_url=thumbnail_image_url,
+        image_small_url=small_image_url,
+        image_medium_url=medium_image_url,
+    )
+
+
+def get_google_books_cover_url(volume_id: str, size: CoverSize) -> str:
+    """
+    Generate a Google Books frontcover URL for the given volume ID and size.
+
+    Args:
+        volume_id (str): The Google Books volume ID
+        size (CoverSize): Desired cover size (THUMBNAIL, MEDIUM, xwLARGE).
+
+    Returns:
+        str: URL to the requested book xw image.
+    """
+    return (
+        f"{GOOGLE_BOOKS_FRONTCOVER_URL}/{volume_id}?fife=w{size.width}-h{size.height}"
     )
