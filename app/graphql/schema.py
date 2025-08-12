@@ -44,7 +44,6 @@ class Query:
                 date_published=info.date_published,
                 page_count=info.page_count,
                 thumbnail_url=info.thumbnail_url,
-                small_thumbnail_url=info.small_thumbnail_url,
                 image_small_url=info.image_small_url,
                 image_medium_url=info.image_medium_url,
                 google_books_id=info.google_books_id,

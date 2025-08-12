@@ -129,7 +129,7 @@ export type GetReviewsQuery = {
       uuid: string;
       title: string;
       thumbnailUrl: string | null;
-      smallThumbnailUrl: string | null;
+      imageSmallUrl: string | null;
       authors: Array<string> | null;
     } | null;
   }>;
@@ -180,7 +180,7 @@ export const GetReviewsDocument = gql`
         uuid
         title
         thumbnailUrl
-        smallThumbnailUrl
+        imageSmallUrl
         authors
       }
     }

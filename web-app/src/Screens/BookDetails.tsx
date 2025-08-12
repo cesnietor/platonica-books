@@ -34,13 +34,7 @@ function BookDetails() {
     );
   }
 
-  const {
-    title,
-    authors,
-    pageCount,
-    imageMediumUrl: imageUrl,
-    thumbnailUrl,
-  } = data.book;
+  const { title, authors, pageCount, imageMediumUrl, thumbnailUrl } = data.book;
 
   return (
     <Box p={4} display="flex" justifyContent="center">
@@ -53,7 +47,7 @@ function BookDetails() {
         >
           <BookCover
             bookName={title}
-            imageUrl={imageUrl || ""}
+            imageUrl={imageMediumUrl || ""}
             fallbackImageUrl={thumbnailUrl || ""}
             width={"100%"}
             height={"100%"}
