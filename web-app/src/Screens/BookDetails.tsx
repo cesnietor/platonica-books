@@ -38,8 +38,7 @@ function BookDetails() {
 
   return (
     <Box p={4} display="flex" justifyContent="center">
-      {/* Right Column: Book Details */}
-      <Box width={200} flexShrink={0}>
+      <Box flexShrink={1}>
         <Box
           sx={{
             marginBottom: "20px",
