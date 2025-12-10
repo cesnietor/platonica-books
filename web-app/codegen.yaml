@@ -1,4 +1,4 @@
-schema: ../graphql/schema.graphql # or a local schema file
+schema: [../graphql/root.graphql, ../graphql/types.graphql] # or a local schema file
 documents: ./src/graphql/**/*.graphql # your GraphQL queries
 generates:
   ./src/generated/graphql.ts:
@@ -18,6 +18,7 @@ generates:
       avoidOptionals: true
       # drop the `any` return type on rawRequest, since you rarely need it
       rawRequest: false
+      # enumsAsTypes: true
 # Optional: watch mode for development
 # watch:
 #   - "./src/graphql/**/*.graphql"

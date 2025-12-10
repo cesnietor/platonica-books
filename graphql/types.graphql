@@ -1,0 +1,33 @@
+type BookInfoType {
+  uuid: String!
+  title: String!
+  authors: [String!]
+  datePublished: String
+  dateStarted: String
+  dateFinished: String
+  pageCount: Int
+  thumbnailUrl: String
+  imageSmallUrl: String
+  imageMediumUrl: String
+  googleBooksId: String
+}
+
+input CreateReviewInput {
+  bookUuid: String!
+  title: String!
+}
+
+type ReviewInfoType {
+  uuid: String!
+  title: String!
+  book: BookInfoType
+  content: String
+}
+
+scalar UUID
+
+input UpdateReviewInput {
+  uuid: String!
+  title: String!
+  content: String!
+}

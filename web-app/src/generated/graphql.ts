@@ -41,15 +41,24 @@ export type BookInfoType = {
   imageMediumUrl: Maybe<Scalars["String"]["output"]>;
   imageSmallUrl: Maybe<Scalars["String"]["output"]>;
   pageCount: Maybe<Scalars["Int"]["output"]>;
-  smallThumbnailUrl: Maybe<Scalars["String"]["output"]>;
   thumbnailUrl: Maybe<Scalars["String"]["output"]>;
   title: Scalars["String"]["output"];
   uuid: Scalars["String"]["output"];
 };
 
+export type CreateReviewInput = {
+  bookUuid: Scalars["String"]["input"];
+  title: Scalars["String"]["input"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
-  updateReview: Maybe<ReviewInfoType>;
+  createReview: ReviewInfoType;
+  updateReview: ReviewInfoType;
+};
+
+export type MutationCreateReviewArgs = {
+  input: CreateReviewInput;
 };
 
 export type MutationUpdateReviewArgs = {
@@ -75,15 +84,28 @@ export type ReviewInfoType = {
   __typename?: "ReviewInfoType";
   book: Maybe<BookInfoType>;
   content: Maybe<Scalars["String"]["output"]>;
-  text: Scalars["String"]["output"];
   title: Scalars["String"]["output"];
   uuid: Scalars["String"]["output"];
 };
 
 export type UpdateReviewInput = {
-  content: InputMaybe<Scalars["String"]["input"]>;
+  content: Scalars["String"]["input"];
   title: Scalars["String"]["input"];
-  uuid: Scalars["UUID"]["input"];
+  uuid: Scalars["String"]["input"];
+};
+
+export type CreateReviewMutationVariables = Exact<{
+  input: CreateReviewInput;
+}>;
+
+export type CreateReviewMutation = {
+  __typename?: "Mutation";
+  createReview: {
+    __typename?: "ReviewInfoType";
+    uuid: string;
+    title: string;
+    content: string | null;
+  };
 };
 
 export type GetBookQueryVariables = Exact<{
@@ -111,7 +133,6 @@ export type GetReviewQuery = {
   review: {
     __typename?: "ReviewInfoType";
     title: string;
-    text: string;
     content: string | null;
     book: { __typename?: "BookInfoType"; uuid: string } | null;
   } | null;
@@ -146,9 +167,18 @@ export type UpdateReviewMutation = {
     uuid: string;
     title: string;
     content: string | null;
-  } | null;
+  };
 };
 
+export const CreateReviewDocument = gql`
+  mutation CreateReview($input: CreateReviewInput!) {
+    createReview(input: $input) {
+      uuid
+      title
+      content
+    }
+  }
+`;
 export const GetBookDocument = gql`
   query GetBook($bookUuid: UUID!) {
     book(uuid: $bookUuid) {
@@ -164,7 +194,6 @@ export const GetReviewDocument = gql`
   query GetReview($reviewUuid: UUID!) {
     review(uuid: $reviewUuid) {
       title
-      text
       content
       book {
         uuid
@@ -215,6 +244,22 @@ export function getSdk(
   withWrapper: SdkFunctionWrapper = defaultWrapper,
 ) {
   return {
+    CreateReview(
+      variables: CreateReviewMutationVariables,
+      requestHeaders?: GraphQLClientRequestHeaders,
+    ): Promise<CreateReviewMutation> {
+      return withWrapper(
+        (wrappedRequestHeaders) =>
+          client.request<CreateReviewMutation>(
+            CreateReviewDocument,
+            variables,
+            { ...requestHeaders, ...wrappedRequestHeaders },
+          ),
+        "CreateReview",
+        "mutation",
+        variables,
+      );
+    },
     GetBook(
       variables: GetBookQueryVariables,
       requestHeaders?: GraphQLClientRequestHeaders,

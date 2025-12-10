@@ -88,28 +88,40 @@ function Review() {
         <CardContent
           sx={{
             display: "flex",
+            alignItems: "stretch",
             width: "100%",
             gap: 4,
-            flexDirection: { xs: "column", md: "row" },
           }}
         >
-          {/* Left Column: Content */}
-          <Box flex={1}>
+          {/* Left Column: Editor */}
+          <Box
+            sx={{
+              // Let it be full width on small screens; ~65% on md+
+              flex: { xs: "1 1 100%", md: "1 1 65%" },
+              minWidth: 0, // allow content to shrink instead of forcing overflow
+            }}
+          >
             <Typography variant="h4" gutterBottom>
               {title}
             </Typography>
-
             <Editor initialContent={content} onSave={onSave} />
           </Box>
 
           {/* Vertical Divider */}
           <Divider
             orientation="vertical"
-            flexItem
             sx={{ display: { xs: "none", md: "block" } }}
           />
-          <Outlet context={contextValue} />
-          {/* <BookDetails uuid={bookUUID} /> */}
+          {/* Right Column: Book Details */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "block" },
+              maxWidth: 220,
+              height: "100%",
+            }}
+          >
+            <Outlet context={contextValue} />
+          </Box>
         </CardContent>
       </Card>
     </Box>

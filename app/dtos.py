@@ -21,6 +21,5 @@ class BookInfo:
 class ReviewInfo:
     uuid: str
     title: str
-    text: str
     book: Optional[BookInfo]
     content: Optional[str]

@@ -47,7 +47,6 @@ def get_data_for_review(review: Optional[Review]) -> Optional[ReviewInfo]:
     return ReviewInfo(
         uuid=review.uuid,
         title=review.title,
-        text=review.text,
         book=book,
         content=content,
     )
@@ -103,6 +102,14 @@ def get_book_from_db(uuid: UUID) -> Optional[Book]:
         return Book.objects.get(uuid=uuid)
     except Book.DoesNotExist:
         return None
+
+
+def create_review(book_uuid: UUID, title: str) -> Optional[Review]:
+    book = get_book_from_db(book_uuid)
+    if book is None:
+        print(f"[ERROR] Failed to fetch book '{book_uuid}'")
+        return None
+    return Review.objects.create(book=book, title=title)
 
 
 @lru_cache(maxsize=1024)

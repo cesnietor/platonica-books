@@ -7,39 +7,10 @@ def create_initial_data(apps, _):
     Book = apps.get_model("app", "Book")
     Review = apps.get_model("app", "Review")
 
-    fake_review = """
-            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus 
-            ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus 
-            duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus 
-            fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada 
-            lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti 
-            sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex
-            sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis
-            convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus 
-            fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada
-            lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti
-            sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus 
-            ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus
-            duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus
-            fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada
-            lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti
-            sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
-            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus
-            ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus
-            duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar
-            vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl
-            malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class
-            aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos
-            himenaeos.
-            """
-
     book = Book.objects.create(title="Why We Sleep", google_books_id="ZlU3DwAAQBAJ")
     Review.objects.create(
         book=book,
         title="The best book on sleep hygiene",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="Hidden Potential",
@@ -48,7 +19,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="There might be other ways to improve",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="The Invention of Morel", google_books_id="2I8SAAAAYAAJ"
@@ -56,7 +26,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Borges masterpiece",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="The Selfish Gene",
@@ -65,7 +34,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Or the immortal gene...",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="In Order To Live",
@@ -74,7 +42,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Hidden secrets of North Korea",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="The Boy Who Was Raised as a Dog",
@@ -83,7 +50,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Traumatized children and how to possibly help them",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="The Headspace Guide to Meditation & Mindfulness",
@@ -92,7 +58,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="The power of mindfulness in your daily life",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="Elon Musk: Tesla, SpaceX, and the Quest for a Fantastic Future",
@@ -101,7 +66,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="How someone made it",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="Atomic Habits",
@@ -110,7 +74,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="How someone made it",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="Man's Search for Meaning",
@@ -119,7 +82,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Meaning ...",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="The Pumpkin Plan",
@@ -128,7 +90,6 @@ def create_initial_data(apps, _):
     Review.objects.create(
         book=book,
         title="Focus on what really matters",
-        text=fake_review,
     )
     book = Book.objects.create(
         title="Sam Walton: Made In America",
@@ -136,8 +97,7 @@ def create_initial_data(apps, _):
     )
     Review.objects.create(
         book=book,
-        title="Focus on what really matters",
-        text=fake_review,
+        title="How to build an empire",
     )
 
 
