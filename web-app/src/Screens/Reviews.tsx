@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import BookCover from "./BookCover";
 import {
   Box,
@@ -15,33 +15,88 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuthGraphql } from "../hooks/useAuthGraphql";
-import { GetReviewsQuery, getSdk } from "../generated/graphql";
+import {
+  CreateReviewMutation,
+  CreateReviewMutationVariables,
+  GetReviewsQuery,
+  getSdk,
+} from "../generated/graphql";
 import { useState } from "react";
 
 function Reviews() {
+  const navigate = useNavigate();
   const client = useAuthGraphql();
   const sdk = getSdk(client);
   const [addReviewModalOpen, setAddReviewModalOpen] = useState<boolean>(false);
-  const [newReviewName, setNewReviewName] = useState<string>("");
-  const [newReviewBookID, setNewReviewBookID] = useState<string>("");
 
   const { data, isLoading, isError } = useQuery<GetReviewsQuery, Error>({
     queryKey: ["reviews"],
     queryFn: () => sdk.GetReviews(),
   });
 
-  const navigate = useNavigate();
+  // FIXME: abstract this in its own component
+  const {
+    mutateAsync,
+    // data,
+    // error,
+    // isPending: isLoading,
+    isError: createReviewError,
+    // isSuccess,
+  } = useMutation<
+    CreateReviewMutation["createReview"],
+    Error,
+    CreateReviewMutationVariables
+  >({
+    mutationFn: (variables) =>
+      sdk.CreateReview(variables).then((res) => res.createReview),
+    onSuccess: async (res) => {
+      navigate(`/reviews/${res.uuid}/book`);
+    },
+  });
+
   const handleAddReviewModalOpen = () => setAddReviewModalOpen(true);
-  const handlAddReviewModalClose = () => setAddReviewModalOpen(false);
-  const handleSubmit = (e: React.FormEvent) => {
+  const handlAddReviewModalClose = async () => {
+    setAddReviewModalOpen(false);
+    setForm({ title: "", bookId: "" });
+  };
+
+  type ReviewFormState = {
+    title: string;
+    bookId: string;
+  };
+
+  const [form, setForm] = useState<ReviewFormState>({
+    title: "",
+    bookId: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const isInvalidNewReview = !form.title.trim() || !form.bookId.trim();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const v = newReviewName.trim();
-    if (!v) return;
-    handlAddReviewModalClose();
+
+    const title = form.title.trim();
+    const bookID = form.bookId.trim();
+    if (!title || !bookID) return;
+
+    await mutateAsync({
+      input: {
+        bookUuid: bookID,
+        title,
+      },
+    });
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error!</div>;
+  if (isError || createReviewError) return <div>Error!</div>;
 
   return (
     <>
@@ -57,18 +112,22 @@ function Reviews() {
         <form onSubmit={handleSubmit}>
           <DialogContent dividers>
             <TextField
+              required
               autoFocus
               fullWidth
-              label={"Review Title"}
-              value={newReviewName}
-              onChange={(e) => setNewReviewName(e.target.value)}
+              label="Review Title"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
               margin="dense"
             />
             <TextField
+              required
               fullWidth
               label="Book ID"
-              value={newReviewBookID}
-              onChange={(e) => setNewReviewBookID(e.target.value)}
+              name="bookId"
+              value={form.bookId}
+              onChange={handleChange}
               margin="dense"
             />
             <Typography variant="caption" gutterBottom>
@@ -79,7 +138,11 @@ function Reviews() {
             <Button onClick={handlAddReviewModalClose} variant="text">
               Cancel
             </Button>
-            <Button onClick={handlAddReviewModalClose} variant="contained">
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={isInvalidNewReview}
+            >
               Create
             </Button>
           </DialogActions>

@@ -26,6 +26,11 @@ migrate:
 export_graphql:
 	@(python manage.py export_schema app.graphql.schema --path ./graphql/schema.graphql)
 
+# Generate Strawberry Python models from TYPES ONLY (safe to overwrite)
+graphql-schema-py-gen:
+	@strawberry schema-codegen graphql/types.graphql > app/graphql/generated_types.py
+	@(ruff check . --fix && ruff format .)
+
 ruff-fix:
 	@echo "Fixing files' format..."
 	@(ruff check . --fix && ruff format .)

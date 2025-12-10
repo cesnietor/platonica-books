@@ -51,7 +51,6 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("text", models.TextField()),
                 (
                     "book",
                     models.ForeignKey(

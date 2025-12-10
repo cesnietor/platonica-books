@@ -4,8 +4,14 @@ from uuid import UUID
 
 import strawberry
 
-from app.graphql.types import BookInfoType, ReviewInfoType, UpdateReviewInput
+from app.graphql.generated_types import (
+    BookInfoType,
+    CreateReviewInput,
+    ReviewInfoType,
+    UpdateReviewInput,
+)
 from app.utils import (
+    create_review,
     get_book_info,
     get_data_for_review,
     get_review_from_db,
@@ -14,6 +20,7 @@ from app.utils import (
 )
 
 
+# Queries and Mutations manually defined here
 @strawberry.type
 class Query:
     @strawberry.field
@@ -27,9 +34,8 @@ class Query:
             return ReviewInfoType(
                 uuid=info.uuid,
                 title=info.title,
-                text=info.text,
-                book=info.book,
                 content=info.content,
+                book=info.book,
             )
 
     @strawberry.field
@@ -41,6 +47,8 @@ class Query:
                 uuid=info.uuid,
                 title=info.title,
                 authors=info.authors,
+                date_started=info.date_started,
+                date_finished=info.date_finished,
                 date_published=info.date_published,
                 page_count=info.page_count,
                 thumbnail_url=info.thumbnail_url,
@@ -53,6 +61,19 @@ class Query:
 
 @strawberry.type
 class Mutation:
+    @strawberry.mutation
+    def create_review(self, input: CreateReviewInput) -> ReviewInfoType:
+        created = create_review(book_uuid=input.book_uuid, title=input.title)
+        if created is None:
+            print(
+                f"""
+                [ERROR] Review not created for book_uuid: 
+                '{input.book_uuid}', title: '{input.title}'
+                """
+            )
+            return None
+        return created
+
     @strawberry.mutation
     def update_review(self, input: UpdateReviewInput) -> ReviewInfoType:
         try:
@@ -69,15 +90,12 @@ class Mutation:
         review.content = parsed_content
         review.save()
 
-        # TODO: might want just to return and make the UI refresh
         reviewInfo = get_data_for_review(review)
-
         return ReviewInfoType(
             uuid=reviewInfo.uuid,
             title=reviewInfo.title,
-            text=reviewInfo.text,
-            book=reviewInfo.book,
             content=reviewInfo.content,
+            book=reviewInfo.book,
         )
 
 

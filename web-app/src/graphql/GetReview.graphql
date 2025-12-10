@@ -1,7 +1,6 @@
 query GetReview($reviewUuid: UUID!) {
   review(uuid: $reviewUuid) {
     title
-    text
     content
     book {
       uuid
